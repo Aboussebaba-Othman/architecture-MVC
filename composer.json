@@ -1,0 +1,15 @@
+{
+    "name": "myvendor/mvc",
+    "autoload": {
+        "psr-4": {
+            "Myvendor\\Mvc\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "John Doe",
+            "email": "johndoe@example.com"
+        }
+    ],
+    "require": {}
+}
