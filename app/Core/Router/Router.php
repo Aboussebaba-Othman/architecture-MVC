@@ -1,40 +1,32 @@
 <?php
 
+namespace App\Core\Router;
 
+class Router
+{
+    private array $routes = [];
 
-class Router {
-    private $routes = [];
-    public function addRoute($method, $route, $controller, $action) {
-        $this->routes[$method][$route] = [
-            'controller' => $controller,
-            'action' => $action
-        ];
+    public function add(string $path, string $controller, string $method)
+    {
+        $this->routes[$path] = ['controller' => $controller, 'method' => $method];
     }
 
+    public function dispatch(string $url)
+    {
+        if (isset($this->routes[$url])) {
+            $controllerName = "App\\Controllers\\" . $this->routes[$url]['controller'];
+            $method = $this->routes[$url]['method'];
 
-    public function matchRoute($url, $method) {
-    
-        if (isset($this->routes[$method][$url])) {
-            return $this->routes[$method][$url];
-        }
-
-        return null;
-    }
-
-
-    public function dispatch($url, $method) {
-    
-        $route = $this->matchRoute($url, $method);
-
-        if ($route) {
-            $controllerName = $route['controller'];
-            $actionName = $route['action'];
-
-            $controller = new $controllerName();
-            $controller->$actionName();
+            if (class_exists($controllerName) && method_exists($controllerName, $method)) {
+                $controller = new $controllerName();
+                call_user_func([$controller, $method]);
+            } else {
+                http_response_code(404);
+                echo "Page not found.";
+            }
         } else {
-        
-            echo "Page non trouvée";
+            http_response_code(404);
+            echo "Page not found.";
         }
     }
 }
